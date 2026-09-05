@@ -1,0 +1,9 @@
+import { Menu, ShoppingBag, UserRound } from 'lucide-react'
+import { Link, NavLink } from 'react-router-dom'
+import { useCart } from '../../context/CartContext'
+
+export default function Navbar() {
+  const { cartCount } = useCart()
+  const linkClass = ({ isActive }) => `text-xs font-bold uppercase tracking-[.12em] ${isActive ? 'text-black' : 'text-zinc-500 hover:text-black'}`
+  return <header className="sticky top-0 z-30 bg-white"><div className="bg-red-600 px-4 py-2 text-center text-[11px] font-bold uppercase tracking-[.14em] text-white">Complimentary global shipping on orders over $200</div><div className="mx-auto flex h-16 max-w-[1440px] items-center gap-5 border-b border-zinc-200 px-4 sm:px-8"><button type="button" className="grid h-10 w-10 place-items-center" aria-label="Open menu"><Menu size={21} /></button><Link to="/" className="text-sm font-bold uppercase tracking-[.2em] sm:text-base">Focus Standard</Link><nav className="ml-auto hidden items-center gap-7 md:flex"><NavLink to="/shop" className={linkClass}>Shop</NavLink><NavLink to="/shop?category=Cameras" className={linkClass}>Cameras</NavLink><NavLink to="/shop?category=Lenses" className={linkClass}>Lenses</NavLink></nav><div className="ml-auto flex items-center gap-1 md:ml-0"><button type="button" className="grid h-10 w-10 place-items-center" aria-label="Account"><UserRound size={19} /></button><Link to="/cart" className="relative grid h-10 w-12 place-items-center" aria-label={`Cart, ${cartCount} items`}><ShoppingBag size={20} /><span className="ml-1 text-xs font-bold">({cartCount})</span></Link></div></div></header>
+}

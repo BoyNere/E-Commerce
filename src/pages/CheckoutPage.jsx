@@ -1,0 +1,16 @@
+import { useState } from 'react'
+import { Link, Navigate } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
+
+const initialForm = { firstName: '', lastName: '', email: '', address: '', city: '', postalCode: '' }
+const Field = ({ label, name, value, onChange, type = 'text' }) => <label className="grid gap-2 text-sm font-bold">{label}<input required type={type} name={name} value={value} onChange={onChange} className="border border-stone-300 bg-white px-3 py-3 font-normal outline-none focus:border-emerald-700" /></label>
+
+export default function CheckoutPage() {
+  const { cartItems, subtotal } = useCart()
+  const [form, setForm] = useState(initialForm)
+  const [submitted, setSubmitted] = useState(false)
+  const shipping = subtotal >= 100 ? 0 : 12
+  if (!cartItems.length && !submitted) return <Navigate to="/cart" replace />
+  if (submitted) return <section className="mx-auto max-w-2xl px-4 py-24 text-center"><p className="text-sm font-bold uppercase tracking-[.14em] text-emerald-700">Order confirmed</p><h1 className="mt-3 text-4xl">Thank you, {form.firstName}.</h1><p className="mt-5 text-stone-600">Your demo order has been placed. No payment was processed.</p><Link to="/" className="mt-8 inline-block bg-stone-900 px-5 py-3 font-bold text-white">Return home</Link></section>
+  return <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"><p className="text-sm font-bold uppercase tracking-[.14em] text-emerald-700">Checkout</p><h1 className="mt-2 text-4xl">Shipping details</h1><form onSubmit={(event) => { event.preventDefault(); setSubmitted(true) }} className="mt-9 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]"><div className="grid gap-5"><div className="grid gap-5 sm:grid-cols-2"><Field label="First name" name="firstName" value={form.firstName} onChange={(event) => setForm({ ...form, [event.target.name]: event.target.value })} /><Field label="Last name" name="lastName" value={form.lastName} onChange={(event) => setForm({ ...form, [event.target.name]: event.target.value })} /></div>{[['Email address', 'email', 'email'], ['Street address', 'address'], ['City', 'city'], ['Postal code', 'postalCode']].map(([label, name, type]) => <Field key={name} label={label} name={name} type={type} value={form[name]} onChange={(event) => setForm({ ...form, [event.target.name]: event.target.value })} />)}</div><aside className="h-fit bg-stone-100 p-6"><h2 className="text-xl">Order summary</h2>{cartItems.map((item) => <div key={item.id} className="mt-4 flex justify-between gap-3 text-sm"><span>{item.name} x{item.quantity}</span><strong>${(item.price * item.quantity).toFixed(2)}</strong></div>)}<div className="mt-5 space-y-3 border-t border-stone-300 pt-5"><div className="flex justify-between"><span>Subtotal</span><strong>${subtotal.toFixed(2)}</strong></div><div className="flex justify-between"><span>Shipping</span><strong>{shipping ? `$${shipping.toFixed(2)}` : 'Free'}</strong></div><div className="flex justify-between border-t border-stone-300 pt-4 text-lg"><strong>Total</strong><strong>${(subtotal + shipping).toFixed(2)}</strong></div></div><button type="submit" className="mt-7 w-full bg-stone-900 px-5 py-4 font-bold text-white hover:bg-emerald-800">Place demo order</button></aside></form></section>
+}
